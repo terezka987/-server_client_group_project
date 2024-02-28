@@ -10,7 +10,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.sendall(str(user_input).encode('utf-8'))
         if user_input == "stop":
             break
-        
+
         data = s.recv(1024)
-        s
         print('Echoing: ', repr(data.decode()))
