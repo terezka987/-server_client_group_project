@@ -1,36 +1,34 @@
 import asyncio
 import xmltodict
 import json
-import os
-import socket
 import pickle
 
 HOST = '127.0.0.1'
 PORT = 5000
 
 
-DICT_TO_SEND = {'plane': {'year': '1977', 'make': 'Cessna',
-                          'model': 'Skyhawk', 'color': 'Light blue and white'}}
-
-# DICT_TO_SEND = {"one": 1, "two": [1, 2], "three": {
-#     "threepointone": 3.1, "threepointtwo": 3.2}}
+DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
+                         'cargo': 'tomatoes', 'color': 'pink'}}
 
 
 def create_dictionary_bytes() -> int:
-    """Needs handle xml, json or bytes"""
+    """Create dictionary and return in bytes"""
     byte_msg = pickle.dumps(DICT_TO_SEND)
+    print(byte_msg)
     return byte_msg
 
 
 def create_dictionary_json() -> str:
-    """Needs handle xml, json or bytes"""
-    json_str = json.dumps(DICT_TO_SEND)
+    """Create dictionary and return in encoded json_string"""
+    json_str = json.dumps(DICT_TO_SEND, indent=2)
+    print(json_str)
     return json_str.encode()
 
 
 def create_dictionary_xml() -> int:
-    """Needs handle xml, json or bytes"""
+    """Create dictionary and return in encoded XML"""
     xml_str = xmltodict.unparse(DICT_TO_SEND, pretty=True)
+    print(xml_str)
     return xml_str.encode()
 
 # def create_file(encrypt: bool) -> int:
