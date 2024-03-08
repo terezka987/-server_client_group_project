@@ -4,7 +4,7 @@ import json
 import pickle
 
 HOST = '127.0.0.1'
-PORT = 5000
+PORT = 8888
 
 
 DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
@@ -18,7 +18,7 @@ def create_dictionary_bytes() -> int:
     return byte_msg
 
 
-def create_dictionary_json() -> str:
+def create_dictionary_json() -> int:
     """Create dictionary and return in encoded json_string"""
     json_str = json.dumps(DICT_TO_SEND, indent=2)
     print(json_str)
@@ -59,7 +59,7 @@ def create_dictionary_xml() -> int:
 
 async def send(message: int):
     reader, writer = await asyncio.open_connection(
-        '127.0.0.1', 8888)
+        '127.0.0.1', PORT)
 
     writer.write(message)
     await writer.drain()
