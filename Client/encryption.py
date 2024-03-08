@@ -35,7 +35,7 @@ class KeyHolder:
         # generate the key from the salt and the password
         self.__derive_key(self.__salt, password)
 
-        # encode it using Base 64 and return it
+        # encode it using Base 64 and save it
         self.__key = base64.urlsafe_b64encode(self.__key)
         print(self.__key)
         print(self.__salt)
