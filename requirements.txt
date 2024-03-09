@@ -1,0 +1,4 @@
+cryptography==42.0.5
+xmltodict==0.13.0
+pytest==7.4.0
+pytest-mock==3.10.0
