@@ -1,6 +1,6 @@
 
 
-def handle_top_level_input(user_input: str) -> int:
+def handle_client_options(user_input: str) -> int:
     """
     Test that the input is integer
     If valid return entered number
