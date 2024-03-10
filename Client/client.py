@@ -1,3 +1,6 @@
+from encryption import KeyHolder
+import handleuserinput
+
 import asyncio
 import xmltodict
 import json
@@ -57,6 +60,31 @@ def create_dictionary_xml() -> int:
 #         s.connect((HOST, PORT))
 #         s.sendall(bytes_to_send)
 
+
+def get_password() -> str:
+    """Prompt the user for a password"""
+    first_entry = str()
+    second_entry = str()
+    while (not first_entry and not second_entry) or (first_entry != second_entry):
+        first_entry = input("Enter a password to encrypt files with \n")
+        second_entry = input("Re-Enter the password to encrypt files with \n")
+        if first_entry != second_entry:
+            print("Passwords dont match, please retry setting your password")
+    return first_entry
+
+
+def encrypt_contents(contents: bytes):
+    """
+    Govern the encryption process by 
+    - Getting password 
+    - Creating a Key
+    - Encrypting contents (to be implemented)
+    - Writing contents to file (to be implemented)
+    """
+    password = get_password()
+    KeyHolder(password)
+
+
 async def send(message: int):
     reader, writer = await asyncio.open_connection(
         '127.0.0.1', PORT)
@@ -69,25 +97,6 @@ async def send(message: int):
     await writer.wait_closed()
 
 
-def handle_user_input(user_input: str) -> int:
-    """
-    Test that the input is integer
-    If valid return entered number
-    If not valid return -1
-    """
-    try:
-        input_num = int(user_input)
-
-    except ValueError:
-        print("Entered value is not a integer")
-        return -1
-
-    if input_num not in (0, 1, 2, 3, 4, 5):
-        print("Entered value should be between 0 and 5")
-        return -1
-    return input_num
-
-
 if __name__ == '__main__':
 
     print("Options")
@@ -96,7 +105,7 @@ if __name__ == '__main__':
     print("5: Send dict as xml")
     selection = -1
     while selection == -1:
-        selection = handle_user_input(
+        selection = handleuserinput.handle_top_level_input(
             input("Enter selection as a integer, or 0 to abort \n"))
 
     # print("Options")
@@ -114,11 +123,25 @@ if __name__ == '__main__':
     # if selection == 2:
     #     bytes_to_send = create_file(True)
     #     print("Sending encrypted file")
+
+    encrypt = False
+    if selection in (3, 4, 5):
+        successful_input = False
+        while not successful_input:
+            response = handleuserinput.handle_whether_to_encrypt(
+                input("Do you want to encrypt your dictionary? \n")
+            )
+            successful_input = response[0]
+        encrypt = response[1]
+
     if selection == 3:
         to_send = create_dictionary_bytes()
     if selection == 4:
         to_send = create_dictionary_json()
     if selection == 5:
         to_send = create_dictionary_xml()
+
+    if encrypt:
+        encrypt_contents(to_send)
 
     asyncio.run(send(to_send))
