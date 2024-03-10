@@ -33,10 +33,10 @@ class KeyHolder:
         # generate new salt and save it
         self.__generate_salt(salt_size)
         # generate the key from the salt and the password
-        self.__derive_key(self.__salt, password)
+        dervied_key = self.__derive_key(self.__salt, password)
 
         # encode it using Base 64 and save it
-        self.__key = base64.urlsafe_b64encode(self.__key)
+        self.__key = base64.urlsafe_b64encode(dervied_key)
         print(self.__key)
         print(self.__salt)
 
