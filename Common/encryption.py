@@ -57,9 +57,6 @@ class KeyHolder:
         """
         fernet = Fernet(self.__key)
         return fernet.encrypt(contents_to_encrypt)
-# encrypt_file
-#     with open(filename, "wb") as file:
-#         file.write(encrypted_data)
 
     # def decrypt(filename, key):
     #     """
