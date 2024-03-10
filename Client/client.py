@@ -1,12 +1,11 @@
-import handleuserinput
-
-from Common.encryption import KeyHolder
-from Common.fileutils import save_to_file
-
-import asyncio
-import xmltodict
-import json
 import pickle
+import json
+import xmltodict
+import asyncio
+from Common.fileutils import save_to_file
+from Common.encryption import KeyHolder
+from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt
+
 
 HOST = '127.0.0.1'
 PORT = 8888
@@ -102,19 +101,19 @@ async def send(message: int):
     await writer.wait_closed()
 
 
-if __name__ == '__main__':
-
+def run_client():
     print("Options")
     print("3: Send dict as bytes")
     print("4: Send dict as json")
     print("5: Send dict as xml")
     selection = -1
     while selection == -1:
-        selection = handleuserinput.handle_top_level_input(
+        selection = handle_client_options(
             input("Enter selection as a integer, or 0 to abort \n"))
 
     if selection == 0:
         print("Exiting")
+        return
     # if selection == 1:
     #     bytes_to_send = create_file(False)
     #     print("Sending unencrypted file")
@@ -126,7 +125,7 @@ if __name__ == '__main__':
     if selection in (3, 4, 5):
         successful_input = False
         while not successful_input:
-            response = handleuserinput.handle_whether_to_encrypt(
+            response = handle_whether_to_encrypt(
                 input("Do you want to encrypt your dictionary? \n")
             )
             successful_input = response[0]
