@@ -19,59 +19,60 @@ PORT = 5000
 #         print(type(output_dict))
 #         print(output_dict)
 
-
-def __handle_unencrypted_message(data: bytes) -> str:
-    try:
-        first_data = data[:6]
-        message = data.decode()
-        if b'xml' in first_data:
-            # XML
-            message = xmltodict.parse(message)
-            print("Message is XML")
-        else:
-            # Json
-            message = json.loads(message)
-            print("Message is JSON")
-    except (UnicodeDecodeError, json.JSONDecodeError):
-        # bytes
+class Server:
+    def __handle_unencrypted_message(self, data: bytes) -> str:
         try:
-            message = pickle.loads(data)
-            print("Message is bytes")
-        except pickle.UnpicklingError:
-            print("Cannot understand message, discarding")
+            first_data = data[:6]
+            message = data.decode()
+            if b'xml' in first_data:
+                # XML
+                message = xmltodict.parse(message)
+                print("Message is XML")
+            else:
+                # Json
+                message = json.loads(message)
+                print("Message is JSON")
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            # bytes
+            try:
+                message = pickle.loads(data)
+                print("Message is bytes")
+            except pickle.UnpicklingError:
+                print("Cannot understand message, discarding")
 
 
-def __handle_encrypted_message(data: bytes) -> str:
-    
+    def __handle_encrypted_message(self, data: bytes) -> str:
+        
 
-async def __receive_message(reader, writer):
-    """Handle message sent to server"""
-    data = await reader.read(-1)
-    first_data = data[:4]
-    if b'SALT' in first_data:
-        message = __handle_encrypted_message(data)
-    else:
-        message = __handle_unencrypted_message(data)
-    addr = writer.get_extra_info('peername')
+    async def __receive_message(self, reader, writer):
+        """Handle message sent to server"""
+        data = await reader.read(-1)
+        first_data = data[:4]
+        if b'SALT' in first_data:
+            message = self.__handle_encrypted_message(data)
+        else:
+            message = self.__handle_unencrypted_message(data)
+        addr = writer.get_extra_info('peername')
 
-    print(f"Received {message!r} from {addr!r}")
+        print(f"Received {message!r} from {addr!r}")
 
-    print("Finished handling message")
-    writer.close()
+        print("Finished handling message")
+        writer.close()
 
 
-async def __main():
-    """Begin the server"""
-    server = await asyncio.start_server(
-        __receive_message, '127.0.0.1', 8888)
+    async def __main(self):
+        """Begin the server"""
+        server = await asyncio.start_server(
+            self.__receive_message, '127.0.0.1', 8888)
 
-    addr = server.sockets[0].getsockname()
-    print(f'Serving on {addr}')
+        addr = server.sockets[0].getsockname()
+        print(f'Serving on {addr}')
 
-    async with server:
-        await server.serve_forever()
+        async with server:
+            await server.serve_forever()
 
 
 def run_server():
     """Entry point to file"""
-    asyncio.run(__main())
+    server = Server()
+    asyncio.run(server.__main())
