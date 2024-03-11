@@ -1,4 +1,5 @@
 import asyncio
+import json
 import pickle
 import xmltodict
 
@@ -26,14 +27,18 @@ async def __receive_message(reader, writer):
         # Json
         message = data.decode()
         if b'xml' in first_data:
-            print("Message is XML")
             message = xmltodict.parse(message)
+            print("Message is XML")
         else:
+            message = json.loads(message)
             print("Message is JSON")
-    except UnicodeDecodeError:
+    except (UnicodeDecodeError, json.JSONDecodeError):
         # bytes
-        message = pickle.loads(data)
-        print("Message is bytes")
+        try:
+            message = pickle.loads(data)
+            print("Message is bytes")
+        except pickle.UnpicklingError:
+            print("Cannot understand message, discarding")
 
     addr = writer.get_extra_info('peername')
 
