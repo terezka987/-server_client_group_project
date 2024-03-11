@@ -6,7 +6,7 @@ import json
 import xmltodict
 from Common.fileutils import save_to_file
 from Common.encryption import KeyHolder
-from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt
+from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt, get_password_from_user
 
 
 HOST = '127.0.0.1'
@@ -62,18 +62,6 @@ def create_dictionary_xml() -> int:
 #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 #         s.connect((HOST, PORT))
 #         s.sendall(bytes_to_send)
-
-
-def get_password_from_user() -> str:
-    """Prompt the user for a password"""
-    first_entry = str()
-    second_entry = str()
-    while (not first_entry and not second_entry) or (first_entry != second_entry):
-        first_entry = input("Enter a password to encrypt files with \n")
-        second_entry = input("Re-Enter the password to encrypt files with \n")
-        if first_entry != second_entry:
-            print("Passwords dont match, please retry setting your password")
-    return first_entry
 
 
 def encrypt_and_save_contents(contents: bytes) -> tuple:
