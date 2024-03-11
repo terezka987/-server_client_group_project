@@ -17,7 +17,8 @@ PORT = 5000
 #         print(output_dict)
 
 
-async def receive_message(reader, writer):
+async def __receive_message(reader, writer):
+    """Handle message sent to server"""
     data = await reader.read(-1)
     first_data = data[:6]
     print(first_data)
@@ -42,9 +43,10 @@ async def receive_message(reader, writer):
     writer.close()
 
 
-async def main():
+async def __main():
+    """Begin the server"""
     server = await asyncio.start_server(
-        receive_message, '127.0.0.1', 8888)
+        __receive_message, '127.0.0.1', 8888)
 
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
@@ -52,5 +54,7 @@ async def main():
     async with server:
         await server.serve_forever()
 
-if __name__ == '__main__':
-    asyncio.run(main())
+
+def run_server():
+    """Entry point to file"""
+    asyncio.run(__main())
