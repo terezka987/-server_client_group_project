@@ -20,12 +20,9 @@ PORT = 5000
 #         print(output_dict)
 
 
-async def __receive_message(reader, writer):
-    """Handle message sent to server"""
-    data = await reader.read(-1)
-    first_data = data[:6]
-    print(first_data)
+def __handle_unencrypted_message(data: bytes) -> str:
     try:
+        first_data = data[:6]
         message = data.decode()
         if b'xml' in first_data:
             # XML
@@ -43,6 +40,18 @@ async def __receive_message(reader, writer):
         except pickle.UnpicklingError:
             print("Cannot understand message, discarding")
 
+
+def __handle_encrypted_message(data: bytes) -> str:
+    
+
+async def __receive_message(reader, writer):
+    """Handle message sent to server"""
+    data = await reader.read(-1)
+    first_data = data[:4]
+    if b'SALT' in first_data:
+        message = __handle_encrypted_message(data)
+    else:
+        message = __handle_unencrypted_message(data)
     addr = writer.get_extra_info('peername')
 
     print(f"Received {message!r} from {addr!r}")
