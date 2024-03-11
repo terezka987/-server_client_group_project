@@ -76,22 +76,23 @@ def get_password_from_user() -> str:
     return first_entry
 
 
-def encrypt_and_save_contents(contents: bytes) -> bytes:
+def encrypt_and_save_contents(contents: bytes) -> tuple:
     """
     Govern the encryption process by 
     - Getting password 
     - Creating a Key
     - Encrypting contents
     - Writing contents to file
+    - Returns salt and encrypted_contents for sending to server
     """
     password = get_password_from_user()
     keyholder = KeyHolder(password)
     encrypted_contents = keyholder.encrypt_contents(contents)
     save_to_file(encrypted_contents)
-    return encrypted_contents
+    return (keyholder.get_salt(), encrypted_contents)
 
 
-async def send(message: int):
+async def send(message: bytes):
     """Send messages to server"""
     reader, writer = await asyncio.open_connection(
         '127.0.0.1', PORT)
@@ -143,7 +144,13 @@ def run_client():
         to_send = create_dictionary_xml()
 
     if encrypt:
-        to_send = encrypt_and_save_contents(to_send)
+        print("Sending encrypted message")
+        salt_header = b'SALT'
+        encrypted_info = encrypt_and_save_contents(to_send)
+        to_send = encrypted_info[0]
+        salt = bytes(salt_header + encrypted_info[1])
 
+        asyncio.run(send(salt))
     else:
+        print("Sending non-encrypted message")
         asyncio.run(send(to_send))
