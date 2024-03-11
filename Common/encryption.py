@@ -37,8 +37,6 @@ class KeyHolder:
 
         # encode it using Base 64 and save it
         self.__key = base64.urlsafe_b64encode(dervied_key)
-        print(self.__key)
-        print(self.__salt)
 
     def get_salt(self) -> bytes:
         """Return salt"""
