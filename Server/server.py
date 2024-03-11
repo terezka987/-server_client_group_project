@@ -1,3 +1,5 @@
+"""This contains the server code which will handle messages sent from the client"""
+
 import asyncio
 import json
 import pickle
@@ -24,12 +26,13 @@ async def __receive_message(reader, writer):
     first_data = data[:6]
     print(first_data)
     try:
-        # Json
         message = data.decode()
         if b'xml' in first_data:
+            # XML
             message = xmltodict.parse(message)
             print("Message is XML")
         else:
+            # Json
             message = json.loads(message)
             print("Message is JSON")
     except (UnicodeDecodeError, json.JSONDecodeError):

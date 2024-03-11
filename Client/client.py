@@ -1,7 +1,9 @@
+"""This contains the client code for sending messages to the server"""
+
+import asyncio
 import pickle
 import json
 import xmltodict
-import asyncio
 from Common.fileutils import save_to_file
 from Common.encryption import KeyHolder
 from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt
@@ -90,6 +92,7 @@ def encrypt_and_save_contents(contents: bytes) -> bytes:
 
 
 async def send(message: int):
+    """Send messages to server"""
     reader, writer = await asyncio.open_connection(
         '127.0.0.1', PORT)
 
@@ -102,6 +105,7 @@ async def send(message: int):
 
 
 def run_client():
+    """Entry point to client"""
     print("Options")
     print("3: Send dict as bytes")
     print("4: Send dict as json")
