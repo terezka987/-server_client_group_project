@@ -10,8 +10,8 @@ import getpass
 class KeyHolder:
     """Is initialised with password and generates a key which is held as a member"""
 
-    def __init__(self, password: str):
-        self.__salt = b'0'
+    def __init__(self, password: str, salt=None):
+        self.__salt = salt
         self.__key = b'0'
         self.__generate_key(password)
 
@@ -30,8 +30,9 @@ class KeyHolder:
         """
         salt_size = 16
 
-        # generate new salt and save it
-        self.__generate_salt(salt_size)
+        # generate new salt if required and save it
+        if self.__salt is None:
+            self.__generate_salt(salt_size)
         # generate the key from the salt and the password
         dervied_key = self.__derive_key(self.__salt, password)
 
