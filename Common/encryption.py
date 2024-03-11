@@ -45,10 +45,6 @@ class KeyHolder:
         # print
         return self.__salt
 
-    def get_key(self) -> bytes:
-        """Return key"""
-        return self.__key
-
     def encrypt_contents(self, contents_to_encrypt: str) -> bytes:
         """
         Takes some contents, encrypts using key and creates a in current directory
