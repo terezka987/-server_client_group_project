@@ -64,7 +64,7 @@ def create_dictionary_xml() -> int:
 #         s.sendall(bytes_to_send)
 
 
-def encrypt_and_save_contents(contents: bytes) -> tuple:
+def encrypt_and_save_contents(contents: bytes) -> bytes:
     """
     Govern the encryption process by 
     - Getting password 
@@ -77,7 +77,7 @@ def encrypt_and_save_contents(contents: bytes) -> tuple:
     keyholder = KeyHolder(password)
     encrypted_contents = keyholder.encrypt_contents(contents)
     save_to_file(encrypted_contents)
-    return (keyholder.get_salt(), encrypted_contents)
+    return keyholder.create_encrypted_message()
 
 
 async def send(message: bytes):
@@ -133,12 +133,8 @@ def run_client():
 
     if encrypt:
         print("Sending encrypted message")
-        salt_header = b'SALT'
-        encrypted_info = encrypt_and_save_contents(to_send)
-        to_send = encrypted_info[0]
-        salt = bytes(salt_header + encrypted_info[1])
-
-        asyncio.run(send(salt))
+        encrypted_contents = encrypt_and_save_contents(to_send)
+        asyncio.run(send(encrypted_contents))
     else:
         print("Sending non-encrypted message")
         asyncio.run(send(to_send))

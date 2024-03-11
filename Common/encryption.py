@@ -13,7 +13,11 @@ class KeyHolder:
     def __init__(self, password: str, salt=None):
         self.__salt = salt
         self.__key = b'0'
+        self.__contents = b'0'
         self.__generate_key(password)
+        # Can be static
+        self.__delimiter = b':'
+        self.__encrypted_tag = b'encrypted'
 
     def __generate_salt(self, size=16):
         """Set salt member"""
@@ -51,8 +55,33 @@ class KeyHolder:
         key: key to use for for encryption/decryption
         """
         fernet = Fernet(self.__key)
-        return fernet.encrypt(contents_to_encrypt)
+        self.__contents = fernet.encrypt(contents_to_encrypt)
+        return self.__contents
 
+    def create_encrypted_message(self) -> bytes:
+        """
+        Combine salt and contents into single byte object containing
+        - header allowing server to detect its encrypted
+        - size of salt
+        - delimiter so values can be extracted
+        """
+        encrypted_header = bytearray()
+        encrypted_header.append(self.__encrypted_tag)
+        encrypted_header.append(self.__delimiter)
+        encrypted_header.append(bytes(len(self.__salt)))
+        encrypted_header.append(self.__delimiter)
+        encrypted_header.append(self.__salt)
+        encrypted_header.append(self.__contents)
+        return bytes(encrypted_header)
+
+    # Can be static
+    def encrypted_message_tag(self) -> bytes:
+        """provide the encrypted tag"""
+        return self.__encrypted_tag
+
+    def delimiter(self) -> bytes:
+        """provide the encrypted message delimiter"""
+        return self.__encrypted_tag
     # def decrypt(filename, key):
     #     """
     #     Given a filename (str) and key (bytes), it decrypts the file and write it
