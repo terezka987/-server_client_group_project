@@ -64,7 +64,7 @@ def create_dictionary_xml() -> int:
 #         s.sendall(bytes_to_send)
 
 
-def get_password() -> str:
+def get_password_from_user() -> str:
     """Prompt the user for a password"""
     first_entry = str()
     second_entry = str()
@@ -84,7 +84,7 @@ def encrypt_and_save_contents(contents: bytes) -> bytes:
     - Encrypting contents
     - Writing contents to file
     """
-    password = get_password()
+    password = get_password_from_user()
     keyholder = KeyHolder(password)
     encrypted_contents = keyholder.encrypt_contents(contents)
     save_to_file(encrypted_contents)
@@ -145,4 +145,5 @@ def run_client():
     if encrypt:
         to_send = encrypt_and_save_contents(to_send)
 
-    asyncio.run(send(to_send))
+    else:
+        asyncio.run(send(to_send))
