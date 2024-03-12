@@ -14,7 +14,7 @@ PORT = 5000
 
 
 class Server:
-    def __handle_unencrypted_message(self, data: bytes) -> str:
+    def _handle_unencrypted_message(self, data: bytes) -> str:
         try:
             first_data = data[:6]
             message = data.decode()
@@ -34,7 +34,7 @@ class Server:
                 print("Cannot understand message, discarding")
                 return str()
 
-    def __handle_encrypted_message(self, data: bytes) -> str:
+    def _handle_encrypted_message(self, data: bytes) -> str:
         keyholder = KeyHolder("")
         data_sections = data.split(keyholder.delimiter())
         salt_length = int.from_bytes(data_sections[1])
@@ -45,11 +45,11 @@ class Server:
         password = get_password_from_user(False)
         otherkeyholder = KeyHolder(password, salt)
         decrypted_data = otherkeyholder.decrypt(data)
-        decoded_data = self.__handle_unencrypted_message(decrypted_data)
+        decoded_data = self._handle_unencrypted_message(decrypted_data)
         print(decoded_data)
         return decoded_data
 
-    async def __receive_message(self, reader, writer):
+    async def _receive_message(self, reader, writer):
         """Handle message sent to server"""
         data = await reader.read(-1)
 
@@ -57,9 +57,9 @@ class Server:
         keyholder = KeyHolder("")
 
         if data.startswith(keyholder.encrypted_message_tag()):
-            message = self.__handle_encrypted_message(data)
+            message = self._handle_encrypted_message(data)
         else:
-            message = self.__handle_unencrypted_message(data)
+            message = self._handle_unencrypted_message(data)
         addr = writer.get_extra_info('peername')
 
         print(f"Received {message!r} from {addr!r}")
@@ -67,7 +67,7 @@ class Server:
         print("Finished handling message")
         writer.close()
 
-    async def main():
+    async def _main(self):
         server = await asyncio.start_server(
             self._receive_message, '127.0.0.1', 8888)
 
@@ -77,8 +77,6 @@ class Server:
         async with server:
             await server.serve_forever()
 
-
-def run_server():
-    """Entry point to file"""
-    server = Server()
-    asyncio.run(server.main())
+    def run_server(self):
+        """Entry point to Server"""
+        asyncio.run(self._main())
