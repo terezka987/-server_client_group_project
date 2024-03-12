@@ -5,19 +5,9 @@ import xmltodict
 HOST = '127.0.0.1'
 PORT = 5000
 
-# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#     s.bind((HOST, PORT))
-#     s.listen()
-#     conn, addr = s.accept()
-#     # need to handle broken connection and possibly loop
-#     with conn:
-#         data = conn.recv(1024)
-#         output_dict = pickle.loads(data)
-#         print(type(output_dict))
-#         print(output_dict)
-
 
 async def receive_message(reader, writer):
+    """Handle a incoming message"""
     data = await reader.read(-1)
     first_data = data[:6]
     print(first_data)
@@ -52,5 +42,6 @@ async def main():
     async with server:
         await server.serve_forever()
 
-if __name__ == '__main__':
+
+def run_server():
     asyncio.run(main())
