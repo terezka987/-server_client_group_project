@@ -12,17 +12,6 @@ import io
 HOST = '127.0.0.1'
 PORT = 5000
 
-# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#     s.bind((HOST, PORT))
-#     s.listen()
-#     conn, addr = s.accept()
-#     # need to handle broken connection and possibly loop
-#     with conn:
-#         data = conn.recv(1024)
-#         output_dict = pickle.loads(data)
-#         print(type(output_dict))
-#         print(output_dict)
-
 
 class Server:
     def __handle_unencrypted_message(self, data: bytes) -> str:
@@ -78,10 +67,9 @@ class Server:
         print("Finished handling message")
         writer.close()
 
-    async def main(self):
-        """Begin the server"""
+    async def main():
         server = await asyncio.start_server(
-            self.__receive_message, '127.0.0.1', 8888)
+            self._receive_message, '127.0.0.1', 8888)
 
         addr = server.sockets[0].getsockname()
         print(f'Serving on {addr}')
