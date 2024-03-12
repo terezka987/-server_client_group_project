@@ -1,5 +1,5 @@
 
-from Client.client import run_client
+from Client.client import Client
 from Server.server import Server
 
 import sys
@@ -18,6 +18,7 @@ if __name__ == '__main__':
         server = Server()
         server.run_server()
     elif argument in ('-c', '-client'):
-        run_client()
+        client = Client()
+        client.run_client()
     else:
         print(f'{argument} is a invalid argument, run --help for valid arguments')
