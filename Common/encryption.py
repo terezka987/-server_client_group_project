@@ -9,15 +9,15 @@ import getpass
 
 class KeyHolder:
     """Is initialised with password and generates a key which is held as a member"""
+    # static members
+    __delimiter = b'\n'
+    __encrypted_tag = b'encrypted'
 
     def __init__(self, password: str, salt=None):
         self.__salt = salt
         self.__key = b'0'
         self.__contents = b'0'
         self.__generate_key(password)
-        # Can be static
-        self.__delimiter = b'\n'
-        self.__encrypted_tag = b'encrypted'
 
     def __generate_salt(self, size=16):
         """Set salt member"""
@@ -89,11 +89,12 @@ class KeyHolder:
         encrypted_header.extend(self.__contents)
         return bytes(encrypted_header)
 
-    # Can be static
-    def encrypted_message_tag(self) -> bytes:
+    @classmethod
+    def encrypted_message_tag(cls) -> bytes:
         """provide the encrypted tag"""
-        return self.__encrypted_tag
+        return KeyHolder.__encrypted_tag
 
-    def delimiter(self) -> bytes:
+    @classmethod
+    def delimiter(cls) -> bytes:
         """provide the encrypted message delimiter"""
-        return self.__delimiter
+        return KeyHolder.__delimiter

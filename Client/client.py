@@ -61,7 +61,6 @@ class Client:
     #         s.connect((HOST, PORT))
     #         s.sendall(bytes_to_send)
 
-
     def _get_password(self) -> str:
         """Prompt the user for a password"""
         first_entry = str()
@@ -73,8 +72,8 @@ class Client:
             if first_entry != second_entry:
                 print("Passwords dont match, please retry setting your password")
         return first_entry
-    
-    def encrypt_and_save_contents(self, contents: bytes) -> bytes:
+
+    def _encrypt_and_save_contents(self, contents: bytes) -> bytes:
         """
         Govern the encryption process by 
         - Getting password 
@@ -90,9 +89,9 @@ class Client:
         return keyholder.create_encrypted_message()
 
     async def _send(self, message: bytes):
-            """Send messages to server"""
+        """Send messages to server"""
         reader, writer = await asyncio.open_connection(
-                '127.0.0.1', PORT)
+            '127.0.0.1', PORT)
 
         writer.write(message)
         await writer.drain()
@@ -142,7 +141,7 @@ class Client:
         if encrypt:
             print("Sending encrypted message")
             encrypted_contents = self._encrypt_and_save_contents(to_send)
-            asyncio.run(send(encrypted_contents))
+            asyncio.run(self._send(encrypted_contents))
         else:
             print("Sending non-encrypted message")
-                asyncio.run(self._send(to_send))
+            asyncio.run(self._send(to_send))
