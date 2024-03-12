@@ -73,7 +73,7 @@ def encrypt_and_save_contents(contents: bytes) -> bytes:
     - Writing contents to file
     - Returns salt and encrypted_contents for sending to server
     """
-    password = get_password_from_user()
+    password = get_password_from_user(True)
     keyholder = KeyHolder(password)
     encrypted_contents = keyholder.encrypt_contents(contents)
     save_to_file(encrypted_contents)

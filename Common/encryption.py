@@ -16,7 +16,7 @@ class KeyHolder:
         self.__contents = b'0'
         self.__generate_key(password)
         # Can be static
-        self.__delimiter = b':'
+        self.__delimiter = b'\n'
         self.__encrypted_tag = b'encrypted'
 
     def __generate_salt(self, size=16):
@@ -50,13 +50,26 @@ class KeyHolder:
 
     def encrypt_contents(self, contents_to_encrypt: str) -> bytes:
         """
-        Takes some contents, encrypts using key and creates a in current directory
+        Takes some contents as str, encrypts using key initialised in __init__
         contents_to_encrypt: the string to be encrypted
         key: key to use for for encryption/decryption
         """
         fernet = Fernet(self.__key)
         self.__contents = fernet.encrypt(contents_to_encrypt)
         return self.__contents
+
+    def decrypt(self, contents_to_decrypt: bytes) -> bytes:
+        """
+        Takes contents_to_decrypt (bytes), and decrypts using key initailised in 
+        __init__
+        """
+        fernet = Fernet(self.__key)
+
+        try:
+            decrypted_data = fernet.decrypt(contents_to_decrypt)
+        except cryptography.fernet.InvalidToken:
+            print("Invalid token, most likely the password is incorrect")
+        return decrypted_data
 
     def create_encrypted_message(self) -> bytes:
         """
@@ -65,13 +78,15 @@ class KeyHolder:
         - size of salt
         - delimiter so values can be extracted
         """
+        # print(f'Contents is {self.__contents}')
+        # print(f'Salt is {self.__salt}')
         encrypted_header = bytearray()
-        encrypted_header.append(self.__encrypted_tag)
-        encrypted_header.append(self.__delimiter)
-        encrypted_header.append(bytes(len(self.__salt)))
-        encrypted_header.append(self.__delimiter)
-        encrypted_header.append(self.__salt)
-        encrypted_header.append(self.__contents)
+        encrypted_header.extend(self.__encrypted_tag)
+        encrypted_header.extend(self.__delimiter)
+        encrypted_header.append(len(self.__salt))
+        encrypted_header.extend(self.__delimiter)
+        encrypted_header.extend(self.__salt)
+        encrypted_header.extend(self.__contents)
         return bytes(encrypted_header)
 
     # Can be static
@@ -81,22 +96,4 @@ class KeyHolder:
 
     def delimiter(self) -> bytes:
         """provide the encrypted message delimiter"""
-        return self.__encrypted_tag
-    # def decrypt(filename, key):
-    #     """
-    #     Given a filename (str) and key (bytes), it decrypts the file and write it
-    #     """
-    #     f = Fernet(key)
-    #     with open(filename, "rb") as file:
-    #         # read the encrypted data
-    #         encrypted_data = file.read()
-    #     # decrypt data
-    #     try:
-    #         decrypted_data = f.decrypt(encrypted_data)
-    #     except cryptography.fernet.InvalidToken:
-    #         print("Invalid token, most likely the password is incorrect")
-    #         return
-    #     # write the original file
-    #     with open(filename, "wb") as file:
-    #         file.write(decrypted_data)
-    #     print("File decrypted successfully")
+        return self.__delimiter
