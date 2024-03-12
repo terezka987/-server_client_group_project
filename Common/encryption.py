@@ -49,18 +49,14 @@ class KeyHolder:
         """Return key"""
         return self.__key
 
-    # def encrypt(contents_to_encrypt: str, filename: str, key: str):
-    #     """
-    #     Takes some contents, encrypts using key and creates filename in current directory
-    #     contents_to_encrypt: the string to be encrypted
-    #     filename: filename to create with encrypted contents
-    #     key: key to use for for encryption/decryption
-    #     """
-    #     fernet = Fernet(key)
-    #     encrypted_data = fernet.encrypt(contents_to_encrypt)
-
-    #     with open(filename, "wb") as file:
-    #         file.write(encrypted_data)
+    def encrypt_contents(self, contents_to_encrypt: str) -> bytes:
+        """
+        Takes some contents, encrypts using key and creates a in current directory
+        contents_to_encrypt: the string to be encrypted
+        key: key to use for for encryption/decryption
+        """
+        fernet = Fernet(self.__key)
+        return fernet.encrypt(contents_to_encrypt)
 
     # def decrypt(filename, key):
     #     """

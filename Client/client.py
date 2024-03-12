@@ -1,5 +1,7 @@
-from encryption import KeyHolder
 import handleuserinput
+
+from Common.encryption import KeyHolder
+from Common.fileutils import save_to_file
 
 import asyncio
 import xmltodict
@@ -73,16 +75,19 @@ def get_password() -> str:
     return first_entry
 
 
-def encrypt_contents(contents: bytes):
+def encrypt_and_save_contents(contents: bytes) -> bytes:
     """
     Govern the encryption process by 
     - Getting password 
     - Creating a Key
-    - Encrypting contents (to be implemented)
-    - Writing contents to file (to be implemented)
+    - Encrypting contents
+    - Writing contents to file
     """
     password = get_password()
-    KeyHolder(password)
+    keyholder = KeyHolder(password)
+    encrypted_contents = keyholder.encrypt_contents(contents)
+    save_to_file(encrypted_contents)
+    return encrypted_contents
 
 
 async def send(message: int):
@@ -107,13 +112,6 @@ if __name__ == '__main__':
     while selection == -1:
         selection = handleuserinput.handle_top_level_input(
             input("Enter selection as a integer, or 0 to abort \n"))
-
-    # print("Options")
-    # print("1: No Encryption")
-    # print("2: Encryption")
-    # while encrypt_selection == -1:
-    #     encrypt_selection = handle_user_input(
-    #         input("Enter selection as a integer, or 0 to abort \n"))
 
     if selection == 0:
         print("Exiting")
@@ -142,6 +140,6 @@ if __name__ == '__main__':
         to_send = create_dictionary_xml()
 
     if encrypt:
-        encrypt_contents(to_send)
+        to_send = encrypt_and_save_contents(to_send)
 
     asyncio.run(send(to_send))
