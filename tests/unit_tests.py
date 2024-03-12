@@ -6,11 +6,15 @@ import os
 import time
 import asyncio
 import pickle
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+print(sys.path)
 
 from unittest.mock import AsyncMock, MagicMock
 
 from Client import client
 from Server import server
+from Common import handleuserinput
+
 class Unittests (unittest.TestCase):
 
 
@@ -34,21 +38,22 @@ class Unittests (unittest.TestCase):
         self.assertEqual(xml, expected_xml)
 
 
-#Testing validating user input as integer within range 0 to 5
+# Testing validating user input as integer within range 0 to 5
         
     def test_handle_user_input(self):
-        self.assertEqual(client.handle_user_input(1),1)
-        self.assertEqual(client.handle_user_input(0),0)
-        self.assertEqual(client.handle_user_input(2),2)
-        self.assertEqual(client.handle_user_input(3),3)
-        self.assertEqual(client.handle_user_input(4),4)
-        self.assertEqual(client.handle_user_input(5),5)
-        self.assertEqual(client.handle_user_input(6),-1)
-        self.assertEqual(client.handle_user_input("Tereza"),-1)
+        self.assertEqual(handleuserinput.handle_top_level_input(1),1)
+        self.assertEqual(handleuserinput.handle_top_level_input(0),0)
+        self.assertEqual(handleuserinput.handle_top_level_input(2),2)
+        self.assertEqual(handleuserinput.handle_top_level_input(3),3)
+        self.assertEqual(handleuserinput.handle_top_level_input(4),4)
+        self.assertEqual(handleuserinput.handle_top_level_input(5),5)
+        self.assertEqual(handleuserinput.handle_top_level_input(6),-1)
+        self.assertEqual(handleuserinput.handle_top_level_input("Tereza"),-1)
 
 class Unittests_async (unittest.IsolatedAsyncioTestCase):
-#Testing receive message method from server
-    async def test_receive_message(self):
+
+    # Test JSON data
+    async def test_receive_message_json(self):
         #redirect stdout
         stdout = io.StringIO()
         sys.stdout = stdout
@@ -63,7 +68,7 @@ class Unittests_async (unittest.IsolatedAsyncioTestCase):
                          'cargo': 'tomatoes', 'color': 'pink'}}
         data_bytes = pickle.dumps(DICT_TO_SEND)
 
-        # Test JSON data
+  
         reader.read = AsyncMock(return_value=data_json)
         await server.receive_message(reader, writer)
 
@@ -71,8 +76,23 @@ class Unittests_async (unittest.IsolatedAsyncioTestCase):
         writer.get_extra_info.assert_called_once_with('peername')
         writer.close.assert_called_once_with()
         self.assertTrue("JSON" in stdout.getvalue())
+        sys.stdout = sys.__stdout__  # Reset stdout redirect.
        
-        # Test XML data
+    # Test XML data
+    async def test_receive_message_xml(self):
+         #redirect stdout
+        stdout = io.StringIO()
+        sys.stdout = stdout
+        # Mocking reader and writer
+        reader = MagicMock()
+        writer = MagicMock()
+
+        # Create test data
+        data_xml = b'<?xml version="1.0"?><root><key>value</key></root>'
+        DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
+                         'cargo': 'tomatoes', 'color': 'pink'}}
+        
+
         reader.read = AsyncMock(return_value=data_xml)
         await server.receive_message(reader, writer)
 
@@ -81,8 +101,22 @@ class Unittests_async (unittest.IsolatedAsyncioTestCase):
         writer.close.assert_called_with()
         self.assertTrue("XML" in stdout.getvalue())
         # self.assertTrue(b'XML' in writer.close.call_args[0])
+        sys.stdout = sys.__stdout__  # Reset stdout redirect.
 
-        # # Test bytes data
+    # Test bytes data
+    async def test_receive_message_bytes(self):
+        #redirect stdout
+        stdout = io.StringIO()
+        sys.stdout = stdout
+        # Mocking reader and writer
+        reader = MagicMock()
+        writer = MagicMock()
+
+        # Create test data
+        
+        DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
+                         'cargo': 'tomatoes', 'color': 'pink'}}
+        data_bytes = pickle.dumps(DICT_TO_SEND)
         reader.read = AsyncMock(return_value=data_bytes)
         await server.receive_message(reader, writer)
 
