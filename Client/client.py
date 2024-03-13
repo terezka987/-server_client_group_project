@@ -4,7 +4,7 @@ import asyncio
 import pickle
 import json
 import xmltodict
-from Common.fileutils import save_to_file
+from Common.fileutils import save_to_file, read_from_file, DEFAULT_NORMAL_FILENAME
 from Common.encryption import KeyHolder
 from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt, get_password_from_user
 
@@ -16,50 +16,33 @@ PORT = 8888
 DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
                          'cargo': 'tomatoes', 'color': 'pink'}}
 
+TEXT_TO_SEND = "I like to float on the clouds of destiny"
+
 
 class Client:
-    def _create_dictionary_bytes(self) -> int:
+    def _create_dictionary_bytes(self) -> bytes:
         """Create dictionary and return in bytes"""
         byte_msg = pickle.dumps(DICT_TO_SEND)
         print(byte_msg)
         return byte_msg
 
-    def _create_dictionary_json(self) -> int:
+    def _create_dictionary_json(self) -> bytes:
         """Create dictionary and return in encoded json_string"""
         json_str = json.dumps(DICT_TO_SEND, indent=2)
         print(json_str)
         return json_str.encode()
 
-    def _create_dictionary_xml(self) -> int:
+    def _create_dictionary_xml(self) -> bytes:
         """Create dictionary and return in encoded XML"""
         xml_str = xmltodict.unparse(DICT_TO_SEND, pretty=True)
         print(xml_str)
         return xml_str.encode()
 
-    # def create_file(encrypt: bool) -> int:
-    #     """Needs handle encryption option"""
-    #     testdir = "testdir"
-    #     if not os.path.exists(testdir):
-    #         os.mkdir(testdir)
-    #     text_to_file = "Test Text"
-    #     path_to_file = testdir + "/test.txt"
-    #     with open(path_to_file, "w", encoding="utf8") as file:
-    #         file.write(text_to_file)
-    #     with open(path_to_file, "r", encoding="utf8") as file:
-    #         content = file.read()
-    #         byte_msg = pickle.dumps(content)
-    #         return byte_msg
-
-    # def send(dict_to_send: dict):
-    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    #         s.connect((HOST, PORT))
-    #         byte_msg = pickle.dumps(dict_to_send)
-    #         s.sendall(byte_msg)
-
-    # def send(bytes_to_send: int):
-    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    #         s.connect((HOST, PORT))
-    #         s.sendall(bytes_to_send)
+    def _create_file(self) -> bytes:
+        """Create a text file with some contents, which is returned as bytes"""
+        save_to_file(TEXT_TO_SEND)
+        contents = read_from_file(DEFAULT_NORMAL_FILENAME)
+        return contents.encode()
 
     def _get_password(self) -> str:
         """Prompt the user for a password"""
@@ -103,9 +86,10 @@ class Client:
     def run_client(self):
         """Entry point to client"""
         print("Options")
-        print("3: Send dict as bytes")
-        print("4: Send dict as json")
-        print("5: Send dict as xml")
+        print("1: Send a text file")
+        print("2: Send dict as bytes")
+        print("3: Send dict as json")
+        print("4: Send dict as xml")
         selection = -1
         while selection == -1:
             selection = handle_client_options(
@@ -114,15 +98,12 @@ class Client:
         if selection == 0:
             print("Exiting")
             return
-        # if selection == 1:
-        #     bytes_to_send = create_file(False)
-        #     print("Sending unencrypted file")
-        # if selection == 2:
-        #     bytes_to_send = create_file(True)
-        #     print("Sending encrypted file")
+        if selection == 1:
+            to_send = self._create_file()
+            print("Sending file")
 
         encrypt = False
-        if selection in (3, 4, 5):
+        if selection in (2, 3, 4):
             successful_input = False
             while not successful_input:
                 response = handle_whether_to_encrypt(
@@ -137,6 +118,10 @@ class Client:
             to_send = self._create_dictionary_json()
         if selection == 5:
             to_send = self._create_dictionary_xml()
+
+        if to_send is None:
+            print("No data to send")
+            return
 
         if encrypt:
             print("Sending encrypted message")
