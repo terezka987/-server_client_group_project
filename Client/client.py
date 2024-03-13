@@ -1,10 +1,12 @@
+"""This contains the client code for sending messages to the server"""
+
+import asyncio
 import pickle
 import json
 import xmltodict
-import asyncio
 from Common.fileutils import save_to_file
 from Common.encryption import KeyHolder
-from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt
+from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt, get_password_from_user
 
 
 HOST = '127.0.0.1'
@@ -78,14 +80,16 @@ class Client:
         - Creating a Key
         - Encrypting contents
         - Writing contents to file
+        - Returns salt and encrypted_contents for sending to server
         """
-        password = get_password()
+        password = get_password_from_user(True)
         keyholder = KeyHolder(password)
         encrypted_contents = keyholder.encrypt_contents(contents)
         save_to_file(encrypted_contents)
-        return encrypted_contents
+        return keyholder.create_encrypted_message()
 
-    async def _send(self, message: int):
+    async def _send(self, message: bytes):
+        """Send messages to server"""
         reader, writer = await asyncio.open_connection(
             '127.0.0.1', PORT)
 
@@ -97,6 +101,7 @@ class Client:
         await writer.wait_closed()
 
     def run_client(self):
+        """Entry point to client"""
         print("Options")
         print("3: Send dict as bytes")
         print("4: Send dict as json")
@@ -134,6 +139,9 @@ class Client:
             to_send = self._create_dictionary_xml()
 
         if encrypt:
-            to_send = self._encrypt_and_save_contents(to_send)
-
-        asyncio.run(self._send(to_send))
+            print("Sending encrypted message")
+            encrypted_contents = self._encrypt_and_save_contents(to_send)
+            asyncio.run(self._send(encrypted_contents))
+        else:
+            print("Sending non-encrypted message")
+            asyncio.run(self._send(to_send))

@@ -33,3 +33,26 @@ def handle_whether_to_encrypt(user_input: str) -> tuple:
         return (True, True)
     else:
         return (True, False)
+
+
+def get_password_from_user(set: bool) -> str:
+    """
+    Prompt the user for a password
+    If set is true we are setting a password
+    If set is false we are requesting a password
+    """
+    if set:
+        first_entry = str()
+        second_entry = str()
+        while (not first_entry and not second_entry) or (first_entry != second_entry):
+            first_entry = input("Enter a password to encrypt files with \n")
+            second_entry = input(
+                "Re-Enter the password to encrypt files with \n")
+            if first_entry != second_entry:
+                print("Passwords dont match, please retry setting your password")
+        return first_entry
+    else:
+        entry = str()
+        while not entry:
+            entry = input("Enter the password used to encrypt the files \n")
+        return entry
