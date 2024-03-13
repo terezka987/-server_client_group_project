@@ -9,10 +9,14 @@ import getpass
 
 class KeyHolder:
     """Is initialised with password and generates a key which is held as a member"""
+    # static members
+    __delimiter = b'\n'
+    __encrypted_tag = b'encrypted'
 
-    def __init__(self, password: str):
-        self.__salt = b'0'
+    def __init__(self, password: str, salt=None):
+        self.__salt = salt
         self.__key = b'0'
+        self.__contents = b'0'
         self.__generate_key(password)
 
     def __generate_salt(self, size=16):
@@ -30,49 +34,67 @@ class KeyHolder:
         """
         salt_size = 16
 
-        # generate new salt and save it
-        self.__generate_salt(salt_size)
+        # generate new salt if required and save it
+        if self.__salt is None:
+            self.__generate_salt(salt_size)
         # generate the key from the salt and the password
         dervied_key = self.__derive_key(self.__salt, password)
 
         # encode it using Base 64 and save it
         self.__key = base64.urlsafe_b64encode(dervied_key)
-        print(self.__key)
-        print(self.__salt)
 
     def get_salt(self) -> bytes:
         """Return salt"""
         # print
         return self.__salt
 
-    def get_key(self) -> bytes:
-        """Return key"""
-        return self.__key
-
     def encrypt_contents(self, contents_to_encrypt: str) -> bytes:
         """
-        Takes some contents, encrypts using key and creates a in current directory
+        Takes some contents as str, encrypts using key initialised in __init__
         contents_to_encrypt: the string to be encrypted
         key: key to use for for encryption/decryption
         """
         fernet = Fernet(self.__key)
-        return fernet.encrypt(contents_to_encrypt)
+        self.__contents = fernet.encrypt(contents_to_encrypt)
+        return self.__contents
 
-    # def decrypt(filename, key):
-    #     """
-    #     Given a filename (str) and key (bytes), it decrypts the file and write it
-    #     """
-    #     f = Fernet(key)
-    #     with open(filename, "rb") as file:
-    #         # read the encrypted data
-    #         encrypted_data = file.read()
-    #     # decrypt data
-    #     try:
-    #         decrypted_data = f.decrypt(encrypted_data)
-    #     except cryptography.fernet.InvalidToken:
-    #         print("Invalid token, most likely the password is incorrect")
-    #         return
-    #     # write the original file
-    #     with open(filename, "wb") as file:
-    #         file.write(decrypted_data)
-    #     print("File decrypted successfully")
+    def decrypt(self, contents_to_decrypt: bytes) -> bytes:
+        """
+        Takes contents_to_decrypt (bytes), and decrypts using key initailised in 
+        __init__
+        """
+        fernet = Fernet(self.__key)
+
+        try:
+            decrypted_data = fernet.decrypt(contents_to_decrypt)
+        except cryptography.fernet.InvalidToken:
+            print("Invalid token, most likely the password is incorrect")
+        return decrypted_data
+
+    def create_encrypted_message(self) -> bytes:
+        """
+        Combine salt and contents into single byte object containing
+        - header allowing server to detect its encrypted
+        - size of salt
+        - delimiter so values can be extracted
+        """
+        # print(f'Contents is {self.__contents}')
+        # print(f'Salt is {self.__salt}')
+        encrypted_header = bytearray()
+        encrypted_header.extend(self.__encrypted_tag)
+        encrypted_header.extend(self.__delimiter)
+        encrypted_header.append(len(self.__salt))
+        encrypted_header.extend(self.__delimiter)
+        encrypted_header.extend(self.__salt)
+        encrypted_header.extend(self.__contents)
+        return bytes(encrypted_header)
+
+    @classmethod
+    def encrypted_message_tag(cls) -> bytes:
+        """provide the encrypted tag"""
+        return KeyHolder.__encrypted_tag
+
+    @classmethod
+    def delimiter(cls) -> bytes:
+        """provide the encrypted message delimiter"""
+        return KeyHolder.__delimiter
