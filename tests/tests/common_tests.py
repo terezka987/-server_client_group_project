@@ -19,7 +19,7 @@ class Commontests (unittest.TestCase):
     def test_get_salt(self):
         keyholder = KeyHolder("password")
         salt = keyholder.get_salt()
-        self.assertIsNotNone(salt)
+        self.assertIsInstance(salt, bytes)
         print(salt)
 
 # Testing encryption and decryption: 
