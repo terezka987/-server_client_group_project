@@ -1,4 +1,17 @@
+"""
+This file contains the KeyHolder class
+This can be initialised with 
+- password only, for encryption, and will create salt and key.
+- password and salt, for decryption, and will create key.
 
+Encryption
+- encrypt_contents, precursor for sending to server, for saving to file.
+- create_encrypted_message, for sending to server.
+
+Decryption
+- Use @classmember functions to facilitate processing contents
+- decrypt, takes contents and uses key to decrypt
+"""
 import secrets
 import base64
 
@@ -30,7 +43,11 @@ class KeyHolder:
 
     def __generate_key(self, password: str):
         """
-        sets self.__key from a `password` and the salt.
+        sets self.__key 
+        password will be used in generation of key
+        salt should be None encryption and will be generated
+
+        key is stored internally and is not available to callers
         """
         salt_size = 16
 
@@ -51,8 +68,11 @@ class KeyHolder:
     def encrypt_contents(self, contents_to_encrypt: str) -> bytes:
         """
         Takes some contents as str, encrypts using key initialised in __init__
+
         contents_to_encrypt: the string to be encrypted
         key: key to use for for encryption/decryption
+        Returns: encrypted bytes
+        Stores: encrypted bytes
         """
         fernet = Fernet(self.__key)
         self.__contents = fernet.encrypt(contents_to_encrypt)
@@ -62,6 +82,8 @@ class KeyHolder:
         """
         Takes contents_to_decrypt (bytes), and decrypts using key initailised in 
         __init__
+
+        Returns: decrypted bytes
         """
         fernet = Fernet(self.__key)
 
@@ -69,14 +91,21 @@ class KeyHolder:
             decrypted_data = fernet.decrypt(contents_to_decrypt)
         except cryptography.fernet.InvalidToken:
             print("Invalid token, most likely the password is incorrect")
+            return bytes()
         return decrypted_data
 
     def create_encrypted_message(self) -> bytes:
         """
+        Should be called after encrypt_contents
+
         Combine salt and contents into single byte object containing
-        - header allowing server to detect its encrypted
+        - tag, identifies contents as encrypted, can be accessed via @classmethods
         - size of salt
-        - delimiter so values can be extracted
+        - salt
+        - contents
+        - A delimiter is used, can be accessed via @classmethods
+
+        Returns: bytes containing above info
         """
         # print(f'Contents is {self.__contents}')
         # print(f'Salt is {self.__salt}')

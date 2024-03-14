@@ -1,4 +1,4 @@
-#client test
+# client test
 import unittest
 import io
 import sys
@@ -16,7 +16,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
 
     # Test JSON data
     async def test_receive_message_json(self):
-        #redirect stdout
+        # redirect stdout
         stdout = io.StringIO()
         sys.stdout = stdout
         # Mocking reader and writer
@@ -27,7 +27,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         data_json = b'{"key": "value"}'
         data_xml = b'<?xml version="1.0"?><root><key>value</key></root>'
         DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
-                         'cargo': 'tomatoes', 'color': 'pink'}}
+                                 'cargo': 'tomatoes', 'color': 'pink'}}
         data_bytes = pickle.dumps(DICT_TO_SEND)
 
         server = Server()
@@ -39,10 +39,10 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         writer.close.assert_called_once_with()
         self.assertTrue("JSON" in stdout.getvalue())
         sys.stdout = sys.__stdout__  # Reset stdout redirect.
-       
+
     # Test XML data
     async def test_receive_message_xml(self):
-         #redirect stdout
+        # redirect stdout
         stdout = io.StringIO()
         sys.stdout = stdout
         # Mocking reader and writer
@@ -52,8 +52,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         # Create test data
         data_xml = b'<?xml version="1.0"?><root><key>value</key></root>'
         DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
-                         'cargo': 'tomatoes', 'color': 'pink'}}
-        
+                                 'cargo': 'tomatoes', 'color': 'pink'}}
 
         server = Server()
         reader.read = AsyncMock(return_value=data_xml)
@@ -68,7 +67,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
 
     # Test bytes data
     async def test_receive_message_bytes(self):
-        #redirect stdout
+        # redirect stdout
         stdout = io.StringIO()
         sys.stdout = stdout
         # Mocking reader and writer
@@ -76,9 +75,9 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         writer = MagicMock()
 
         # Create test data
-        
+
         DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
-                         'cargo': 'tomatoes', 'color': 'pink'}}
+                                 'cargo': 'tomatoes', 'color': 'pink'}}
         data_bytes = pickle.dumps(DICT_TO_SEND)
         reader.read = AsyncMock(return_value=data_bytes)
         server = Server()
@@ -89,6 +88,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         writer.close.assert_called_with()
         self.assertTrue("bytes" in stdout.getvalue())
         sys.stdout = sys.__stdout__  # Reset stdout redirect.
+
 
 if __name__ == '__main__':
     unittest.main()
