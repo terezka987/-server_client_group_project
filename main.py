@@ -9,6 +9,9 @@ if __name__ == '__main__':
         print(
             "Please specify whether to run client or server, or run python3 main.py -help")
         exit(1)
+    elif (len(sys.argv)) > 2:
+        print("To many arguments received, try --help to get options")
+        exit(1)
     argument = sys.argv[1]
     if argument == 'help':
         print("Application has the following options \n \
