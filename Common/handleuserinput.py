@@ -22,7 +22,7 @@ def handle_client_options(user_input: str) -> int:
 def handle_whether_to_encrypt(user_input: str) -> tuple:
     """
     Check whether the user has entered a boolean value
-    first return value is whether we processed the input
+    First return value is whether valid input was provided
     second return value is whether to encrypt
     """
     if user_input not in ('y', 'n'):
@@ -33,6 +33,22 @@ def handle_whether_to_encrypt(user_input: str) -> tuple:
         return (True, True)
     else:
         return (True, False)
+
+
+def handle_whether_to_print_or_create_file(user_input: str) -> str:
+    """
+    The server can create text files or print out contents, user selects either
+    First return value is whether valid input was provided
+    Second return value is what user selected
+    """
+    if user_input not in ('file', 'screen'):
+        print("Entered value is not 'file' or 'screen', please enter one of these values")
+        return (False, False)
+
+    if user_input == 'file':
+        return (True, 'file')
+    else:
+        return (True, 'screen')
 
 
 def get_password_from_user(set: bool) -> str:

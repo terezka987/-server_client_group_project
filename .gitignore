@@ -3,3 +3,4 @@ settings.json
 secure_client_file.txt
 client_file.txt
 secure_file.txt
+received_message*
