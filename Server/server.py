@@ -1,13 +1,11 @@
 """This contains the server code which will handle messages sent from the client"""
 
-from Common.encryption import KeyHolder
-from Common.handleuserinput import get_password_from_user
-
 import asyncio
 import json
 import pickle
-import xmltodict
-import io
+
+from Common.encryption import KeyHolder
+from Common.handleuserinput import get_password_from_user
 
 HOST = '127.0.0.1'
 PORT = 5000
@@ -35,18 +33,17 @@ class Server:
                 return str()
 
     def _handle_encrypted_message(self, data: bytes) -> str:
-        keyholder = KeyHolder("")
-        data_sections = data.split(keyholder.delimiter())
+        data_sections = data.split(KeyHolder.delimiter())
         salt_length = int.from_bytes(data_sections[1])
         salt = data_sections[2][:salt_length]
         data = data_sections[2][salt_length:]
         # print(f'Data is {data}')
         # print(f'Salt is {salt}')
         password = get_password_from_user(False)
-        otherkeyholder = KeyHolder(password, salt)
-        decrypted_data = otherkeyholder.decrypt(data)
+        keyholder = KeyHolder(password, salt)
+        decrypted_data = keyholder.decrypt(data)
         decoded_data = self._handle_unencrypted_message(decrypted_data)
-        print(decoded_data)
+
         return decoded_data
 
     async def _receive_message(self, reader, writer):
@@ -54,9 +51,7 @@ class Server:
         data = await reader.read(-1)
 
         # Need to make it so we dont need a keyholder here
-        keyholder = KeyHolder("")
-
-        if data.startswith(keyholder.encrypted_message_tag()):
+        if data.startswith(KeyHolder.encrypted_message_tag()):
             message = self._handle_encrypted_message(data)
         else:
             message = self._handle_unencrypted_message(data)

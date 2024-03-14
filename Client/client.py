@@ -95,6 +95,8 @@ class Client:
             selection = handle_client_options(
                 input("Enter selection as a integer, or 0 to abort \n"))
 
+        to_send = None
+
         if selection == 0:
             print("Exiting")
             return
@@ -107,20 +109,20 @@ class Client:
             successful_input = False
             while not successful_input:
                 response = handle_whether_to_encrypt(
-                    input("Do you want to encrypt your dictionary? \n")
+                    input("Do you want to encrypt your dictionary? enter y or n. \n")
                 )
                 successful_input = response[0]
             encrypt = response[1]
 
-        if selection == 3:
+        if selection == 2:
             to_send = self._create_dictionary_bytes()
-        if selection == 4:
+        if selection == 3:
             to_send = self._create_dictionary_json()
-        if selection == 5:
+        if selection == 4:
             to_send = self._create_dictionary_xml()
 
         if to_send is None:
-            print("No data to send")
+            print("No data to send, exiting")
             return
 
         if encrypt:
