@@ -16,9 +16,13 @@ if __name__ == '__main__':
     if argument == 'help':
         print("Application has the following options \n \
               -c, -client: will start the client \n \
-              -s, -server: will start the server")
-    elif argument in ('-s', '-server'):
-        server = Server()
+              -sos, -server: will start the server and prints to screen \n \
+              -sof, -server: will start the server and prints to file")
+    elif argument in ('-sos', '-server'):
+        server = Server(True)
+        server.run_server()
+    elif argument in ('-sof', '-server'):
+        server = Server(False)
         server.run_server()
     elif argument in ('-c', '-client'):
         client = Client()
