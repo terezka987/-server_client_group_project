@@ -48,7 +48,9 @@ class Client:
         """Prompt the user for a password"""
         first_entry = str()
         second_entry = str()
-        while (not first_entry and not second_entry) or (first_entry != second_entry):
+        while (
+                not first_entry and not second_entry) or (
+                first_entry != second_entry):
             first_entry = input("Enter a password to encrypt files with \n")
             second_entry = input(
                 "Re-Enter the password to encrypt files with \n")
@@ -58,8 +60,8 @@ class Client:
 
     def _encrypt_and_save_contents(self, contents: bytes) -> bytes:
         """
-        Govern the encryption process by 
-        - Getting password 
+        Govern the encryption process by
+        - Getting password
         - Creating a Key
         - Encrypting contents
         - Writing contents to file
@@ -109,8 +111,7 @@ class Client:
             successful_input = False
             while not successful_input:
                 response = handle_whether_to_encrypt(
-                    input("Do you want to encrypt your dictionary? enter y or n. \n")
-                )
+                    input("Do you want to encrypt your dictionary? enter y or n. \n"))
                 successful_input = response[0]
             encrypt = response[1]
 

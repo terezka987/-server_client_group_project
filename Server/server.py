@@ -85,8 +85,8 @@ class Server:
         output_type = response[1]
 
         if output_type == 'screen':
-            print(f"Message {self.__message_received}. Received {
-                  message} from {sender!r}")
+            print(f"""Message {self.__message_received}. Received {
+                  message} from {sender!r}""")
         elif output_type == 'file':
             filename = f"received_message{self.__message_received}.txt"
             print(f"Saving message to disk in {filename}")
@@ -101,8 +101,10 @@ class Server:
         self.__message_received += 1
 
         if data.startswith(KeyHolder.encrypted_message_tag()):
+            print("Received encrypted message")
             message = self._handle_encrypted_message(data)
         else:
+            print("Received unencrypted message")
             message = self._handle_unencrypted_message(data)
         addr = writer.get_extra_info('peername')
         self.output_message(message, addr)

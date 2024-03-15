@@ -1,6 +1,6 @@
 """
 This file contains the KeyHolder class
-This can be initialised with 
+This can be initialised with
 - password only, for encryption, and will create salt and key.
 - password and salt, for decryption, and will create key.
 
@@ -43,7 +43,7 @@ class KeyHolder:
 
     def __generate_key(self, password: str):
         """
-        sets self.__key 
+        sets self.__key
         password will be used in generation of key
         salt should be None encryption and will be generated
 
@@ -80,7 +80,7 @@ class KeyHolder:
 
     def decrypt(self, contents_to_decrypt: bytes) -> bytes:
         """
-        Takes contents_to_decrypt (bytes), and decrypts using key initailised in 
+        Takes contents_to_decrypt (bytes), and decrypts using key initailised in
         __init__
 
         Returns: decrypted bytes

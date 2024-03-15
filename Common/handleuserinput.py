@@ -1,3 +1,4 @@
+"""Contains methods for checking validity of user input"""
 
 
 def handle_client_options(user_input: str) -> int:
@@ -60,7 +61,9 @@ def get_password_from_user(set: bool) -> str:
     if set:
         first_entry = str()
         second_entry = str()
-        while (not first_entry and not second_entry) or (first_entry != second_entry):
+        while (
+                not first_entry and not second_entry) or (
+                first_entry != second_entry):
             first_entry = input("Enter a password to encrypt files with \n")
             second_entry = input(
                 "Re-Enter the password to encrypt files with \n")
