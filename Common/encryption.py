@@ -70,7 +70,7 @@ class KeyHolder:
         Takes some contents as str, encrypts using key initialised in __init__
 
         contents_to_encrypt: the string to be encrypted
-        key: key to use for for encryption/decryption
+        key: stored internally
         Returns: encrypted bytes
         Stores: encrypted bytes
         """
