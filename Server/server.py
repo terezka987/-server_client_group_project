@@ -1,4 +1,8 @@
-"""This contains the server code which will handle messages sent from the client"""
+"""
+This contains the server code which will handle messages sent from the client
+It can receive unencrypted or encrypted messages
+Messages can be stored to a file or printed to screen
+"""
 
 import asyncio
 import json
@@ -13,10 +17,19 @@ PORT = 5000
 
 
 class Server:
+    """
+    Server class that can handle encrypted and unencrypted messages
+    """
+
     def __init__(self):
         self.__message_received = 0
 
     def _handle_unencrypted_message(self, data: bytes) -> str:
+        """
+        Parameter: data to be decoded.
+        Prints: Type of data received
+        Returns: string of decoded data
+        """
         try:
             first_data = data[:6]
             message = data.decode()
@@ -36,6 +49,16 @@ class Server:
                 return str()
 
     def _handle_encrypted_message(self, data: bytes) -> str:
+        """
+        Parameter: data, contains
+        <tag><delimiter><saltsize><delimiter><salt><contents>
+
+        Will extract salt, prompt for password and create a key
+        Use the key to decrypt the data and then pass to be handled by
+        _handle_encrypted_message
+
+        Return: unencrypted, decoded message
+        """
         data_sections = data.split(KeyHolder.delimiter())
         salt_length = int.from_bytes(data_sections[1])
         salt = data_sections[2][:salt_length]
@@ -49,7 +72,10 @@ class Server:
         return decoded_data
 
     def output_message(self, message: str, sender: str):
-        """Ask user whether to print to screen or save to file"""
+        """
+        Ask user whether to print to screen or save to file
+        If saved to a file, the file name is printed
+        """
         successful_input = False
         while not successful_input:
             response = handle_whether_to_print_or_create_file(
@@ -85,6 +111,7 @@ class Server:
         writer.close()
 
     async def _main(self):
+        """Setup and run server"""
         server = await asyncio.start_server(
             self._receive_message, '127.0.0.1', 8888)
 
