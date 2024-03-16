@@ -30,7 +30,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
                                  'cargo': 'tomatoes', 'color': 'pink'}}
         data_bytes = pickle.dumps(DICT_TO_SEND)
 
-        server = Server()
+        server = Server(True)
         reader.read = AsyncMock(return_value=data_json)
         await server._receive_message(reader, writer)
 
@@ -54,7 +54,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
         DICT_TO_SEND = {'boat': {'size': 'ship', 'country': 'Finland',
                                  'cargo': 'tomatoes', 'color': 'pink'}}
 
-        server = Server()
+        server = Server(True)
         reader.read = AsyncMock(return_value=data_xml)
         await server._receive_message(reader, writer)
 
@@ -80,7 +80,7 @@ class Servertests_async (unittest.IsolatedAsyncioTestCase):
                                  'cargo': 'tomatoes', 'color': 'pink'}}
         data_bytes = pickle.dumps(DICT_TO_SEND)
         reader.read = AsyncMock(return_value=data_bytes)
-        server = Server()
+        server = Server(True)
         await server._receive_message(reader, writer)
 
         # # Asserts

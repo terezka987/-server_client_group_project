@@ -21,8 +21,9 @@ class Server:
     Server class that can handle encrypted and unencrypted messages
     """
 
-    def __init__(self):
+    def __init__(self, print_to_screen: bool):
         self.__message_received = 0
+        self.__print_to_screen = print_to_screen
 
     def _handle_unencrypted_message(self, data: bytes) -> str:
         """
@@ -76,18 +77,11 @@ class Server:
         Ask user whether to print to screen or save to file
         If saved to a file, the file name is printed
         """
-        successful_input = False
-        while not successful_input:
-            response = handle_whether_to_print_or_create_file(
-                input("Type 'file' to save, and 'screen' to print to screen\n")
-            )
-            successful_input = response[0]
-        output_type = response[1]
 
-        if output_type == 'screen':
+        if self.__print_to_screen:
             print(f"""Message {self.__message_received}. Received {
                   message} from {sender!r}""")
-        elif output_type == 'file':
+        else :
             filename = f"received_message{self.__message_received}.txt"
             print(f"Saving message to disk in {filename}")
 
