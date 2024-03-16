@@ -9,7 +9,7 @@ import json
 import pickle
 
 from Common.encryption import KeyHolder
-from Common.handleuserinput import get_password_from_user, handle_whether_to_print_or_create_file
+from Common.handleuserinput import get_password_from_user
 from Common.fileutils import save_to_file
 
 HOST = '127.0.0.1'
@@ -19,11 +19,17 @@ PORT = 5000
 class Server:
     """
     Server class that can handle encrypted and unencrypted messages
+    Initialised with print_to_screen setting
     """
 
     def __init__(self, print_to_screen: bool):
         self.__message_received = 0
         self.__print_to_screen = print_to_screen
+
+        mode = "file"
+        if print_to_screen:
+            mode = "screen"
+        print(f"Server running in print to {mode} mode")
 
     def _handle_unencrypted_message(self, data: bytes) -> str:
         """
