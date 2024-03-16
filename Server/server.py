@@ -38,9 +38,15 @@ class Server:
                 print("Message is XML")
                 return message
             else:
-                print("Message is JSON")
-                return message
-        except (UnicodeDecodeError, json.JSONDecodeError):
+                try:
+                    json.loads(message)
+                    print("Message is JSON")
+                    return message
+                except json.JSONDecodeError:
+                    print("Message is text")
+                    return message
+
+        except UnicodeDecodeError:
             try:
                 message = pickle.loads(data)
                 print("Message is bytes")
@@ -81,7 +87,7 @@ class Server:
         if self.__print_to_screen:
             print(f"""Message {self.__message_received}. Received {
                   message} from {sender!r}""")
-        else :
+        else:
             filename = f"received_message{self.__message_received}.txt"
             print(f"Saving message to disk in {filename}")
 
