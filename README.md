@@ -36,9 +36,9 @@ pip3 install -r requirements.txt
 ```
 
 ## support
-Please contact sgpclar2@liverpool.ac.uk for issues with product \n
-Please contact t.gonsiorova@liverpool.ac.uk for issues with unit tests \n
-Please contact y.han51@liverpool.ac.uk for issues with performance tests \n
+Please contact sgpclar2@liverpool.ac.uk for issues with product   
+Please contact t.gonsiorova@liverpool.ac.uk for issues with unit tests    
+Please contact y.han51@liverpool.ac.uk for issues with performance tests    
 
 ## roadmap
 Support use on different machines
