@@ -96,7 +96,7 @@ class Server:
             print(f"""Message {self.__message_received}. Received \"{
                   message}\" from {sender!r}""")
         else:
-            filename = f"received_message \" {self.__message_received}.txt\""
+            filename = f"received_message {self.__message_received}.txt"
             print(f"Saving message to disk in {filename}")
 
             if isinstance(message, dict):
@@ -123,6 +123,7 @@ class Server:
         addr = writer.get_extra_info('peername')
         self.output_message(message, addr)
         print("Finished handling message")
+        print('\n')
 
         writer.close()
 

@@ -87,7 +87,8 @@ class Client:
 
     def run_client(self):
         """Entry point to client"""
-        print("Options")
+        print('\n')
+        print("*************Options**********")
         print("1: Send a text file")
         print("2: Send dict as bytes")
         print("3: Send dict as json")
