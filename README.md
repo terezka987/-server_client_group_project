@@ -24,7 +24,23 @@ python3 main.py -c: starts client
 ## visualisation
 
 ## usage
-This application can be used as the server or the client \n
+This application can be used as the server or the client    
+It should be run from the repository directory. e.g. ~/server_client_group_project   
+
+# Server    
+- Will stay running until it receives a stop message  
+- Once started will print to screen or file as selected in the command line   
+- Will prompt for password if a encrypted message is received  
+- If in file mode, the files with prefix 'received_message' will be saved to repository directory   
+    
+# Client   
+- Can complete one option when run     
+- Once started will present options     
+    1. Save unencrypted text file to repository directory and send to server   
+    2. Create a dictionary in bytes   
+    3. Create a dictionary in JSON   
+    4. Create a dictionary in XML   
+- Options 2,3,4 will prompt if the contents should be encrypted, if yes a password will be required
 
 
 
