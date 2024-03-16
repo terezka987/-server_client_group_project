@@ -30,5 +30,4 @@ if __name__ == '__main__':
         client = Client()
         client.run_client()
     else:
-        print(f'{argument} is a invalid argument, run {
-              HELP} for valid arguments')
+        print(f'{argument} is a invalid argument, run {HELP} for valid arguments')
