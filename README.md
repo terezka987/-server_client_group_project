@@ -22,6 +22,8 @@ python3 main.py -c: starts client
 
 
 ## visualisation
+![](GIF1.gif)
+
 
 ## usage
 This application can be used as the server or the client    
