@@ -11,6 +11,7 @@ import pickle
 from Common.encryption import KeyHolder
 from Common.handleuserinput import get_password_from_user
 from Common.fileutils import save_to_file
+from Common.server_utils import STOP_MESSAGE
 
 HOST = '127.0.0.1'
 PORT = 5000
@@ -25,6 +26,7 @@ class Server:
     def __init__(self, print_to_screen: bool):
         self.__message_received = 0
         self.__print_to_screen = print_to_screen
+        self.__server = None
 
         mode = "file"
         if print_to_screen:
@@ -91,10 +93,10 @@ class Server:
         """
 
         if self.__print_to_screen:
-            print(f"""Message {self.__message_received}. Received {
-                  message} from {sender!r}""")
+            print(f"""Message {self.__message_received}. Received \"{
+                  message}\" from {sender!r}""")
         else:
-            filename = f"received_message{self.__message_received}.txt"
+            filename = f"received_message \" {self.__message_received}.txt\""
             print(f"Saving message to disk in {filename}")
 
             if isinstance(message, dict):
@@ -105,6 +107,12 @@ class Server:
         """Handle message sent to server"""
         data = await reader.read(-1)
         self.__message_received += 1
+
+        if data == STOP_MESSAGE:
+            print("Received stop")
+            writer.close()
+            self.__server.close()
+            return
 
         if data.startswith(KeyHolder.encrypted_message_tag()):
             print("Received encrypted message")
@@ -120,14 +128,13 @@ class Server:
 
     async def _main(self):
         """Setup and run server"""
-        server = await asyncio.start_server(
+        self.__server = await asyncio.start_server(
             self._receive_message, '127.0.0.1', 8888)
-
-        addr = server.sockets[0].getsockname()
+        addr = self.__server.sockets[0].getsockname()
         print(f'Serving on {addr}')
 
-        async with server:
-            await server.serve_forever()
+        # async with self.__server:
+        await self.__server.wait_closed()
 
     def run_server(self):
         """Entry point to Server"""

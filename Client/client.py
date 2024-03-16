@@ -7,7 +7,7 @@ import xmltodict
 from Common.fileutils import save_to_file, read_from_file, DEFAULT_NORMAL_FILENAME
 from Common.encryption import KeyHolder
 from Common.handleuserinput import handle_client_options, handle_whether_to_encrypt, get_password_from_user
-
+from Common.server_utils import STOP_MESSAGE
 
 HOST = '127.0.0.1'
 PORT = 8888
@@ -23,19 +23,19 @@ class Client:
     def _create_dictionary_bytes(self) -> bytes:
         """Create dictionary and return in bytes"""
         byte_msg = pickle.dumps(DICT_TO_SEND)
-        print(byte_msg)
+        print(f" Sending \"{byte_msg}\"")
         return byte_msg
 
     def _create_dictionary_json(self) -> bytes:
         """Create dictionary and return in encoded json_string"""
         json_str = json.dumps(DICT_TO_SEND, indent=2)
-        print(json_str)
+        print(f" Sending \"{json_str}\"")
         return json_str.encode()
 
     def _create_dictionary_xml(self) -> bytes:
         """Create dictionary and return in encoded XML"""
         xml_str = xmltodict.unparse(DICT_TO_SEND, pretty=True)
-        print(xml_str)
+        print(f" Sending \"{xml_str}\"")
         return xml_str.encode()
 
     def _create_file(self) -> bytes:
@@ -92,6 +92,7 @@ class Client:
         print("2: Send dict as bytes")
         print("3: Send dict as json")
         print("4: Send dict as xml")
+        print("5: Stop Server")
         selection = -1
         while selection == -1:
             selection = handle_client_options(
@@ -104,7 +105,6 @@ class Client:
             return
         if selection == 1:
             to_send = self._create_file()
-            print("Sending file")
 
         encrypt = False
         if selection in (2, 3, 4):
@@ -121,6 +121,8 @@ class Client:
             to_send = self._create_dictionary_json()
         if selection == 4:
             to_send = self._create_dictionary_xml()
+        if selection == 5:
+            to_send = STOP_MESSAGE
 
         if to_send is None:
             print("No data to send, exiting")
