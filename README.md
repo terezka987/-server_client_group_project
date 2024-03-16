@@ -20,10 +20,8 @@ python3 main.py -sof: starts server and will print to file
 python3 main.py -c: starts client
 ```
 
-
 ## visualisation
-![](GIF1.gif)
-
+![alt text](GIF1.gif)
 
 ## usage
 This application can be used as the server or the client    
